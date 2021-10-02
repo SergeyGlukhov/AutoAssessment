@@ -48,7 +48,7 @@ Thumbs.db
 *.mov
 *.wmv
 /docker-compose.override.yml
-/config/config.yml
+/config.yml
 
 #csv files
 *.csv

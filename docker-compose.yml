@@ -1,8 +1,19 @@
 version: '3.7'
+volumes:
+  pg-data:
 
 services:
-  telebot:
-    build: .
-    command: ["python", "run.py"]
+  db:
+    image: "postgres:12.4"
     volumes:
-      - .:/code
+      - pg-data:/var/lib/postgresql/data
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_USER=test
+      - POSTGRES_DB=test
+#  telebot:
+#    build: .
+#    command: ["python", "run.py"]
+#    volumes:
+#      - .:/code

@@ -12,3 +12,5 @@ if os.getenv("APP_CONFIG_PATH"):
 
 with open(_STD_CONFIG_PATH, "r") as config_file:
     CONFIG = yaml.safe_load(config_file)
+
+DB_DSN = "postgresql://{username}:{pwd}@{host}:{port}/{database}".format(**CONFIG["db"])

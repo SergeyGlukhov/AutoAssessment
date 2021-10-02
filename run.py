@@ -6,9 +6,9 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import BotCommand
 
-from assessment_src.handlers.common import register_handlers_common
-from assessment_src.handlers.drinks import register_handlers_drink
-from assessment_src.handlers.food import register_handlers_food
+from assessment_src.telebot.handlers.common import register_handlers_common
+from assessment_src.telebot.handlers.drinks import register_handlers_drink
+from assessment_src.telebot.handlers.food import register_handlers_food
 from assessment_src.config import CONFIG
 
 logger = logging.getLogger(__name__)

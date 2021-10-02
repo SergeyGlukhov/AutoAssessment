@@ -4,7 +4,7 @@ from pathlib import Path
 import yaml
 
 _STD_CONFIG_PATH = (
-    Path("config/config.yml") if Path("../config/config.yml").exists() else Path("../config/config.yml")
+    Path("config.yml") if Path("config.yml").exists() else Path("../config.yml")
 )
 
 if os.getenv("APP_CONFIG_PATH"):

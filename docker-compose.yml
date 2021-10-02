@@ -1,0 +1,8 @@
+version: '3.7'
+
+services:
+  telebot:
+    build: .
+    command: ["python", "run.py"]
+    volumes:
+      - .:/code

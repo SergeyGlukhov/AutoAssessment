@@ -17,3 +17,5 @@ services:
     command: ["python", "run.py"]
     volumes:
       - .:/code
+    depends_on:
+      - db

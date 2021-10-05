@@ -47,7 +47,7 @@ async def show_subjects(message: types.Message):
 async def choice_subject(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
     await state.update_data(subject_name=callback_data["name"])
 
-    works = await get_works_from_db(subject_id=callback_data["id"], user_id=call.from_user.id)
+    works = await get_works_from_db(subject_id=int(callback_data["id"]), user_id=call.from_user.id)
     await call.message.edit_text("Выберите работу:", reply_markup=get_keyboard(works, cb_works))
     await call.answer()
     await ShowWorksState.next()

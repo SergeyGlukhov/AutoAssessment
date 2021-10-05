@@ -1,10 +1,6 @@
 import datetime
-import enum
-import sqlalchemy.dialects.postgresql as pg
 
 from gino_starlette import Gino
-from sqlalchemy.sql import expression
-from sqlalchemy_utils import ChoiceType
 
 from assessment_src import config
 
@@ -16,8 +12,9 @@ class Student(db.Model):
 
     id = db.Column(db.Integer(), primary_key=True)
     fio = db.Column(db.String(50))
+    email = db.Column(db.String(50))
 
-    is_admin = db.Column(db.Boolean())
+    is_admin = db.Column(db.Boolean(), default=False)
 
     time_start = db.Column(
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
@@ -26,17 +23,29 @@ class Student(db.Model):
     group_id = db.Column(db.Integer(), nullable=False)
 
 
-class Teachers(db.Model):
+class Teacher(db.Model):
     __tablename__ = "teachers"
 
     id = db.Column(db.Integer(), primary_key=True)
     fio = db.Column(db.String(50))
+    email = db.Column(db.String(50))
 
     time_start = db.Column(
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
     )
 
     group_id = db.Column(db.Integer(), nullable=False)
+
+
+class City(db.Model):
+    __tablename__ = "cities"
+
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(20))
+
+    time_start = db.Column(
+        db.DateTime(), nullable=False, default=datetime.datetime.utcnow
+    )
 
 
 class University(db.Model):
@@ -49,6 +58,21 @@ class University(db.Model):
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
     )
 
+    city_id = db.Column(db.Integer(), nullable=False)
+
+
+class Faculty(db.Model):
+    __tablename__ = "faculties"
+
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(20))
+
+    time_start = db.Column(
+        db.DateTime(), nullable=False, default=datetime.datetime.utcnow
+    )
+
+    university_id = db.Column(db.Integer(), nullable=False)
+
 
 class Group(db.Model):
     __tablename__ = "groups"
@@ -60,11 +84,43 @@ class Group(db.Model):
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
     )
 
-    university_id = db.Column(db.Integer(), nullable=False)
+    faculty_id = db.Column(db.Integer(), nullable=False)
 
 
-class Exam(db.Model):
-    __tablename__ = "exams"
+class Work(db.Model):
+    __tablename__ = "works"
+
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(10), nullable=False)
+
+    time_start = db.Column(
+        db.DateTime(), nullable=False, default=datetime.datetime.utcnow
+    )
+    token = db.Column(db.String(20), nullable=False, index=True)
+
+    teacher_id = db.Column(db.Integer(), nullable=False, index=True)
+    admin_id = db.Column(db.Integer(), nullable=False, index=True)
+    subject_id = db.Column(db.Integer(), nullable=False, index=True)
+    group_id = db.Column(db.Integer(), nullable=False, index=True)
+
+
+class Grade(db.Model):
+    __tablename__ = "grades"
+
+    id = db.Column(db.Integer(), primary_key=True)
+    grade = db.Column(db.String(10))
+
+    time_start = db.Column(
+        db.DateTime(), nullable=False, default=datetime.datetime.utcnow
+    )
+
+    # teacher_id = db.Column(db.Integer(), nullable=False)
+    student_id = db.Column(db.Integer(), nullable=False, index=True)
+    work_id = db.Column(db.Integer(), nullable=False, index=True)
+
+
+class Subject(db.Model):
+    __tablename__ = "subjects"
 
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(10))
@@ -73,7 +129,5 @@ class Exam(db.Model):
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
     )
 
-    grade = db.Column(db.String(10))
-
-    student_id = db.Column(db.Integer(), nullable=False)
     teacher_id = db.Column(db.Integer(), nullable=False)
+    group_id = db.Column(db.Integer(), nullable=False, index=True)

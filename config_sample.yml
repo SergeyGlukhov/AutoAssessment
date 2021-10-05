@@ -1,2 +1,13 @@
 bot:
   token:
+db:
+  host: localhost
+  port: 5432
+  username: test
+  pwd: test
+  database: test
+logger:
+  logger_level: INFO
+  format: '[{asctime}][{levelname}] - {name}: {message}'
+  style: '{'
+  file_path: 'logs/service.log'

@@ -76,6 +76,7 @@ async def choice_load(message: types.Message, state: FSMContext):
         await message.answer("Нажмите на кнопку ниже.")
         return
     if message.text == "Нет":
+        await message.answer("Ок", reply_markup=types.ReplyKeyboardRemove())
         await state.finish()
         return
 

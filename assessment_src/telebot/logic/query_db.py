@@ -157,11 +157,7 @@ async def get_grade_from_db(user_id: int, work_id: int):
 
 
 async def get_works_from_db(user_id: int = None, subject_id: int = None):
-    works = None
-    if user_id:
-        works = await Work.query.where(Work.admin_id == user_id).gino.all()
-    if user_id and subject_id:
-        works = await Work.query.where(Work.admin_id == user_id).gino.all()
+    works = await Work.query.where(Work.admin_id == user_id).where(Work.subject_id == subject_id).gino.all()
     return works
 
 

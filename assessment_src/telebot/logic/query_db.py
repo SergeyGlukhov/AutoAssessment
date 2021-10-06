@@ -181,6 +181,15 @@ async def get_students_grades_from_db(work_id: int):
         Student.id == Grade.student_id
     ).select().where(Grade.work_id == work_id).gino.load(
         Student.load(grade=Grade)
-    # SearchRegions.distinct(SearchRegions.id).load(cache=CacheRegions)
     ).all()
     return grades
+
+
+async def update_student_db_fio(id: int, fio: str):
+    student = await Student.query.where(Student.id == id).gino.first()
+    await student.update(fio=fio).apply()
+
+
+async def update_student_db_email(id: int, email: str):
+    student = await Student.query.where(Student.id == id).gino.first()
+    await student.update(email=email).apply()

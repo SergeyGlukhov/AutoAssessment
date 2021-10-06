@@ -1,5 +1,6 @@
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from assessment_src.telebot.logic.query_db import (
@@ -19,11 +20,7 @@ class AdminRegistrationState(StatesGroup):
     wait_for_email = State()
 
 
-class InputEmailState(StatesGroup):
-    wait_for_emails = State()
-
-
-async def verify_new_student(message: types.Message):
+async def verify_new_student_for_registration(message: types.Message):
 
     keyboard = types.ReplyKeyboardMarkup(
         resize_keyboard=True,
@@ -35,10 +32,6 @@ async def verify_new_student(message: types.Message):
 
 
 async def start_registration(message: types.Message, state: FSMContext):
-
-    if message.text != "Старт":
-        await message.answer("Нажмите кнопку ниже.")
-        return
 
     student = await get_student_from_db(message.from_user.id)
     if student:
@@ -112,7 +105,16 @@ async def email_input(message: types.Message, state: FSMContext):
 
 
 def register_handlers_admin(dp: Dispatcher):
-    dp.register_message_handler(verify_new_student, commands="registration_admin", state="*")
+    dp.register_message_handler(
+        verify_new_student_for_registration,
+        commands="registration_admin",
+        state="*"
+    )
+    dp.register_message_handler(
+        verify_new_student_for_registration,
+        Text(equals="Регитрация", ignore_case=True),
+        state="*"
+    )
     dp.register_message_handler(start_registration, state=AdminRegistrationState.wait_for_start)
     dp.register_message_handler(city_input, state=AdminRegistrationState.wait_for_city)
     dp.register_message_handler(university_input, state=AdminRegistrationState.wait_for_university)

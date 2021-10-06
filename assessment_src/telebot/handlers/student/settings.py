@@ -9,6 +9,7 @@ from assessment_src.telebot.logic.query_db import (
     update_student_db_email
 )
 from assessment_src.telebot.handlers.common import back_menu
+from telebot.handlers.common import get_back_menu_keyboard
 
 
 class SetSettingsState(StatesGroup):
@@ -20,7 +21,7 @@ class SetSettingsState(StatesGroup):
 def get_settings_keyboard():
     buttons = [
         "ФИО", "Email",
-        "Помощь", "В меню"
+        "Помощь", "Назад"
     ]
     keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     keyboard.add(*buttons)
@@ -29,20 +30,9 @@ def get_settings_keyboard():
 
 async def cmd_settings(message: types.Message, state: FSMContext):
     await state.finish()
-    await message.answer(
-        "Выберите настройки, которые хотите поменять:",
-        reply_markup=get_settings_keyboard()
-    )
-    await SetSettingsState.wait_for_start.set()
-
-
-async def start_settings(message: types.Message, state: FSMContext):
-    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
-    keyboard.add("В меню")
 
     student = await get_student_from_db(message.from_user.id)
     if not student:
-        await state.finish()
         await message.answer(
             """
             Вас нет в системе.\n
@@ -51,27 +41,38 @@ async def start_settings(message: types.Message, state: FSMContext):
             /registration_admin - Регистрация админом\n
             """
         )
+        await back_menu(message, state)
         return
+
+    await state.update_data(student=student)
+
+    await message.answer(
+        f"Ваши настройки:\nФИО: {student.fio}\nEmail: {student.email}"
+    )
+
+    await message.answer(
+        "Выберите настройки, которые хотите поменять:",
+        reply_markup=get_settings_keyboard()
+    )
+    await SetSettingsState.wait_for_start.set()
+
+
+async def start_settings(message: types.Message, state: FSMContext):
+
+    data = await state.get_data()
+    student = data.get("student")
+
+    await message.answer(message.text, reply_markup=get_back_menu_keyboard())
     if message.text == "ФИО":
         await SetSettingsState.wait_for_fio.set()
         await message.answer(
-            f"""
-            Ваше ФИО: {student.fio}\n
-            Новое значение:\n
-            """,
-            reply_markup=keyboard
+            f"Ваше ФИО: {student.fio}\nНовое значение:\n",
         )
     elif message.text == "Email":
         await SetSettingsState.wait_for_email.set()
         await message.answer(
-            f"""
-            Ваш email: {student.fio}\n
-            Новое значение:\n
-            """,
-            reply_markup=keyboard
+            f"Ваш email: {student.fio}\nНовое значение:\n",
         )
-    elif message.text == "В меню":
-        await back_menu(message, state)
     else:
         await cmd_settings(message, state)
 
@@ -89,6 +90,14 @@ async def update_email(message: types.Message, state: FSMContext):
 def settings_handlers(dp: Dispatcher):
     dp.register_message_handler(cmd_settings, commands="settings", state="*")
     dp.register_message_handler(cmd_settings, Text(equals="Настройки", ignore_case=True), state="*")
+
+    # "Назад" ставим вперед, чтобы update функции не принемали "Назад" как input text message
+    dp.register_message_handler(
+        back_menu,
+        Text(equals="Назад", ignore_case=True),
+        state=SetSettingsState
+    )
+
     dp.register_message_handler(start_settings, state=SetSettingsState.wait_for_start)
     dp.register_message_handler(update_fio, state=SetSettingsState.wait_for_fio)
     dp.register_message_handler(update_email, state=SetSettingsState.wait_for_email)

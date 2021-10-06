@@ -9,9 +9,11 @@ from assessment_src.telebot.logic.query_db import (
     update_student_admin,
 )
 
+from telebot.handlers.admin.admin import back_menu_admin
+from telebot.handlers.common import get_back_menu_keyboard
+
 
 class AdminRegistrationState(StatesGroup):
-    wait_for_start = State()
     wait_for_city = State()
     wait_for_university = State()
     wait_for_faculty = State()
@@ -20,41 +22,26 @@ class AdminRegistrationState(StatesGroup):
     wait_for_email = State()
 
 
-async def verify_new_student_for_registration(message: types.Message):
-
-    keyboard = types.ReplyKeyboardMarkup(
-        resize_keyboard=True,
-        one_time_keyboard=True
-    )
-    keyboard.add("Старт")
-    await message.answer("Нажмите кнопку ниже.", reply_markup=keyboard)
-    await AdminRegistrationState.wait_for_start.set()
-
-
 async def start_registration(message: types.Message, state: FSMContext):
 
     student = await get_student_from_db(message.from_user.id)
     if student:
         if student.is_admin:
             await message.answer("Повторно регистрироваться запрещено")
-            await state.finish()
+            await back_menu_admin(message, state)
             return
         else:
             await update_student_admin(student)
             await message.answer("Вам присвоен статус админа.")
-            await state.finish()
+            await back_menu_admin(message, state)
             return
 
     await state.update_data(id=message.from_user.id)
-    await message.answer("Введите город:")
+    await message.answer("Введите город:", reply_markup=get_back_menu_keyboard())
     await AdminRegistrationState.next()
-    # await RegistrationState.wait_for_city.set()
 
 
 async def city_input(message: types.Message, state: FSMContext):
-    if len(message.text) < 3:
-        await message.answer("Некорректный город:")
-        return
     await state.update_data(city=message.text)
 
     await message.answer("Введите учебное заведение:")
@@ -62,9 +49,6 @@ async def city_input(message: types.Message, state: FSMContext):
 
 
 async def university_input(message: types.Message, state: FSMContext):
-    if len(message.text) < 3:
-        await message.answer("Некорректное учебное заведение, повторите попытку:")
-        return
 
     await state.update_data(university=message.text)
     await message.answer("Введите факультет:")
@@ -93,11 +77,11 @@ async def fio_input(message: types.Message, state: FSMContext):
 
 
 async def email_input(message: types.Message, state: FSMContext):
-    email = message.text
     if not message.text.find('@') or not message.text.find('.'):
         await message.answer("Вы ввели не коректный email.")
-        email = None
-    await state.update_data(email=email)
+        return
+
+    await state.update_data(email=message.text)
     data = await state.get_data()
     await set_registration_admin_to_db(data)
     await message.answer("Вы зарегистрировались.")
@@ -106,16 +90,22 @@ async def email_input(message: types.Message, state: FSMContext):
 
 def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(
-        verify_new_student_for_registration,
+        start_registration,
         commands="registration_admin",
         state="*"
     )
     dp.register_message_handler(
-        verify_new_student_for_registration,
-        Text(equals="Регитрация", ignore_case=True),
+        start_registration,
+        Text(equals="Регистрация", ignore_case=True),
         state="*"
     )
-    dp.register_message_handler(start_registration, state=AdminRegistrationState.wait_for_start)
+
+    dp.register_message_handler(
+        back_menu_admin,
+        Text(equals="Назад", ignore_case=True),
+        state=AdminRegistrationState
+    )
+
     dp.register_message_handler(city_input, state=AdminRegistrationState.wait_for_city)
     dp.register_message_handler(university_input, state=AdminRegistrationState.wait_for_university)
     dp.register_message_handler(faculty_input, state=AdminRegistrationState.wait_for_faculty)

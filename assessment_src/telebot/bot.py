@@ -5,6 +5,7 @@ from assessment_src.models import db
 
 from telebot.handlers.admin.registration_admin import register_handlers_admin
 from telebot.handlers.admin.create_work import create_work_handlers_admin
+from telebot.handlers.admin.settings_admin import settings_admin_handlers
 from telebot.handlers.admin.show_works import show_works_handlers
 
 from telebot.handlers.student.send_grade import send_grade_handlers
@@ -34,6 +35,8 @@ async def run_bot(dp: Dispatcher, bot: Bot):
     settings_handlers(dp)
     admin_handlers(dp)
     menu_handlers_common(dp)
+    register_handlers_admin(dp)
+    settings_admin_handlers(dp)
     # register_handlers_common(dp)
     create_work_handlers_admin(dp)
     send_grade_handlers(dp)

@@ -14,6 +14,15 @@ def get_menu_keyboard():
     return keyboard
 
 
+def get_back_menu_keyboard(buttons_add: list = None):
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    if buttons_add:
+        keyboard.add(*buttons_add)
+
+    keyboard.add("Назад")
+    return keyboard
+
+
 def get_help_cmd():
     text_help = """
     Список команд:\n

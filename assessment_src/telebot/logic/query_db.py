@@ -193,3 +193,48 @@ async def update_student_db_fio(id: int, fio: str):
 async def update_student_db_email(id: int, email: str):
     student = await Student.query.where(Student.id == id).gino.first()
     await student.update(email=email).apply()
+
+
+async def get_admin_settings_from_db(id: int):
+    settings_admin_query = Student.outerjoin(
+        Group, Student.group_id == Group.id
+    ).outerjoin(
+        Faculty, Faculty.id == Group.faculty_id
+    ).outerjoin(
+        University, University.id == Faculty.university_id
+    ).outerjoin(
+        City, City.id == University.city_id
+    ).select().where(Student.id == id).where(Student.is_admin == True)
+
+    settings_admin = await settings_admin_query.gino.load(
+        Student.load(
+            group=Group.name,
+            faculty=Faculty.name,
+            faculty_id=Faculty.id,
+            university=University.name,
+            university_id=University.id,
+            city=City.name,
+            city_id=City.id
+        )
+    ).first()
+    return settings_admin
+
+
+async def update_city_db(id, name):
+    city = await City.query.where(City.id == id).gino.first()
+    await city.update(name=name).apply()
+
+
+async def update_university_db(id, name):
+    university = await University.query.where(University.id == id).gino.first()
+    await university.update(name=name).apply()
+
+
+async def update_faculty_db(id, name):
+    faculty = await Faculty.query.where(Faculty.id == id).gino.first()
+    await faculty.update(name=name).apply()
+
+
+async def update_group_db(id, name):
+    group = await Group.query.where(Group.id == id).gino.first()
+    await group.update(name=name).apply()

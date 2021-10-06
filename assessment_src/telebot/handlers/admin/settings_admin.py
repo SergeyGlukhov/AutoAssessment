@@ -11,7 +11,6 @@ from assessment_src.telebot.logic.query_db import (
     update_city_db
 )
 from assessment_src.telebot.handlers.admin.admin import back_menu_admin
-from telebot.handlers.common import get_back_menu_keyboard
 
 
 class SettingsAdminState(StatesGroup):

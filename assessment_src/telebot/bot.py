@@ -3,15 +3,15 @@ from aiogram.types import BotCommand
 
 from assessment_src.models import db
 
-from telebot.handlers.admin.registration_admin import register_handlers_admin
-from telebot.handlers.admin.create_work import create_work_handlers_admin
-from telebot.handlers.admin.settings_admin import settings_admin_handlers
-from telebot.handlers.admin.show_works import show_works_handlers
+from assessment_src.telebot.handlers.admin.registration_admin import register_handlers_admin
+from assessment_src.telebot.handlers.admin.create_work import create_work_handlers_admin
+from assessment_src.telebot.handlers.admin.settings_admin import settings_admin_handlers
+from assessment_src.telebot.handlers.admin.show_works import show_works_handlers
 
-from telebot.handlers.student.send_grade import send_grade_handlers
-from telebot.handlers.admin.admin import admin_handlers
-from telebot.handlers.common import menu_handlers_common
-from telebot.handlers.student.settings import settings_handlers
+from assessment_src.telebot.handlers.student.send_grade import send_grade_handlers
+from assessment_src.telebot.handlers.admin.admin import admin_handlers
+from assessment_src.telebot.handlers.common import menu_handlers_common
+from assessment_src.telebot.handlers.student.settings import settings_handlers
 
 
 async def set_commands(bot: Bot):

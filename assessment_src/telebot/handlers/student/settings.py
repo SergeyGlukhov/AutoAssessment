@@ -9,7 +9,7 @@ from assessment_src.telebot.logic.query_db import (
     update_student_db_email
 )
 from assessment_src.telebot.handlers.common import back_menu
-from telebot.handlers.common import get_back_menu_keyboard
+from assessment_src.telebot.handlers.common import get_back_menu_keyboard
 
 
 class SetSettingsState(StatesGroup):

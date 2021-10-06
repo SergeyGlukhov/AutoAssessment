@@ -8,7 +8,7 @@ from assessment_src.telebot.logic.query_db import (
     get_work_from_db,
     set_grade_to_db, create_student, get_grade_from_db,
 )
-from telebot.handlers.common import back_menu
+from assessment_src.telebot.handlers.common import back_menu
 
 
 def get_send_grade_keyboard():

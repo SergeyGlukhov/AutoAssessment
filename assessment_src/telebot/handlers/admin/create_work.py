@@ -4,8 +4,8 @@ from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from assessment_src.telebot.logic.query_db import set_work_to_db, get_student_from_db
-from telebot.handlers.admin.admin import back_menu_admin
-from telebot.handlers.common import get_back_menu_keyboard
+from assessment_src.telebot.handlers.admin.admin import back_menu_admin
+from assessment_src.telebot.handlers.common import get_back_menu_keyboard
 
 
 class CreateWorkState(StatesGroup):

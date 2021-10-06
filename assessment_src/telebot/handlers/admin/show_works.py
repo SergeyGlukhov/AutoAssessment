@@ -11,7 +11,7 @@ from aiogram.utils.exceptions import MessageNotModified
 from assessment_src.telebot.logic.query_db import (
     get_works_from_db, get_student_from_db, get_subjects_from_db, get_students_grades_from_db
 )
-from telebot.handlers.admin.admin import back_menu_admin
+from assessment_src.telebot.handlers.admin.admin import back_menu_admin
 
 
 class ShowWorksState(StatesGroup):

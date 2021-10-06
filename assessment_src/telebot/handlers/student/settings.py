@@ -71,7 +71,7 @@ async def start_settings(message: types.Message, state: FSMContext):
     elif message.text == "Email":
         await SetSettingsState.wait_for_email.set()
         await message.answer(
-            f"Ваш email: {student.fio}\nНовое значение:\n",
+            f"Ваш email: {student.email}\nНовое значение:\n",
         )
     else:
         await cmd_settings(message, state)

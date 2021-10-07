@@ -16,7 +16,6 @@ async def create_student(data: dict, is_admin: bool = False):
     student = await Student.create(
         id=data.get("id"),
         fio=data.get("fio"),
-        email=data.get("email"),
         is_admin=is_admin,
         group_id=data.get("group_id")
     )
@@ -57,7 +56,6 @@ async def set_registration_admin_to_db(data: dict):
         student = await Student.create(
             id=data.get("id", None),
             fio=data.get("fio", None),
-            email=data.get("email", None),
             is_admin=True,
             group_id=group.id
         )
@@ -85,14 +83,12 @@ async def set_work_to_db(data: dict):
     teacher = await Teacher.query.where(
         and_(
             Teacher.fio == data.get("fio"),
-            Teacher.email == data.get("email"),
             Teacher.group_id == student.group_id
         )
     ).gino.first()
     if not teacher:
         teacher = await Teacher.create(
             fio=data.get("fio"),
-            email=data.get("email"),
             group_id=student.group_id
         )
 
@@ -188,11 +184,6 @@ async def get_students_grades_from_db(work_id: int):
 async def update_student_db_fio(id: int, fio: str):
     student = await Student.query.where(Student.id == id).gino.first()
     await student.update(fio=fio).apply()
-
-
-async def update_student_db_email(id: int, email: str):
-    student = await Student.query.where(Student.id == id).gino.first()
-    await student.update(email=email).apply()
 
 
 async def get_admin_settings_from_db(id: int):

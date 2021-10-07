@@ -19,7 +19,6 @@ class AdminRegistrationState(StatesGroup):
     wait_for_faculty = State()
     wait_for_group = State()
     wait_for_fio = State()
-    wait_for_email = State()
 
 
 async def start_registration(message: types.Message, state: FSMContext):
@@ -72,16 +71,6 @@ async def group_input(message: types.Message, state: FSMContext):
 
 async def fio_input(message: types.Message, state: FSMContext):
     await state.update_data(fio=message.text)
-    await message.answer("Введите email:")
-    await AdminRegistrationState.next()
-
-
-async def email_input(message: types.Message, state: FSMContext):
-    if not message.text.find('@') or not message.text.find('.'):
-        await message.answer("Вы ввели не коректный email.")
-        return
-
-    await state.update_data(email=message.text)
     data = await state.get_data()
     await set_registration_admin_to_db(data)
     await message.answer("Вы зарегистрировались.")
@@ -111,6 +100,5 @@ def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(faculty_input, state=AdminRegistrationState.wait_for_faculty)
     dp.register_message_handler(group_input, state=AdminRegistrationState.wait_for_group)
     dp.register_message_handler(fio_input, state=AdminRegistrationState.wait_for_fio)
-    dp.register_message_handler(email_input, state=AdminRegistrationState.wait_for_email)
 
 

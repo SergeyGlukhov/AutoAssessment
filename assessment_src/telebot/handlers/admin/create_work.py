@@ -12,7 +12,6 @@ class CreateWorkState(StatesGroup):
     wait_for_start = State()
     wait_for_subject = State()
     wait_for_fio = State()
-    wait_for_email = State()
     wait_for_work = State()
 
 
@@ -48,16 +47,6 @@ async def subject_input(message: types.Message, state: FSMContext):
 
 async def fio_input(message: types.Message, state: FSMContext):
     await state.update_data(fio=message.text)
-    await message.answer("Введите email преподавателя:")
-    await CreateWorkState.next()
-
-
-async def email_input(message: types.Message, state: FSMContext):
-    email = message.text
-    if not message.text.find('@') or not message.text.find('.'):
-        await message.answer("Вы ввели не коректный email.")
-        email = None
-    await state.update_data(email=email)
     await message.answer("Введите назыание работы:")
     await CreateWorkState.next()
 
@@ -84,5 +73,4 @@ def create_work_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(start_create_work, state=CreateWorkState.wait_for_start)
     dp.register_message_handler(subject_input, state=CreateWorkState.wait_for_subject)
     dp.register_message_handler(fio_input, state=CreateWorkState.wait_for_fio)
-    dp.register_message_handler(email_input, state=CreateWorkState.wait_for_email)
     dp.register_message_handler(work_input, state=CreateWorkState.wait_for_work)

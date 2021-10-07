@@ -12,7 +12,6 @@ class Student(db.Model):
 
     id = db.Column(db.Integer(), primary_key=True)
     fio = db.Column(db.String(50))
-    email = db.Column(db.String(50))
 
     is_admin = db.Column(db.Boolean(), default=False)
 
@@ -28,7 +27,6 @@ class Teacher(db.Model):
 
     id = db.Column(db.Integer(), primary_key=True)
     fio = db.Column(db.String(50))
-    email = db.Column(db.String(50))
 
     time_start = db.Column(
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow

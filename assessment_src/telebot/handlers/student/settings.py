@@ -6,7 +6,6 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from assessment_src.telebot.logic.query_db import (
     get_student_from_db,
     update_student_db_fio,
-    update_student_db_email
 )
 from assessment_src.telebot.handlers.common import back_menu
 from assessment_src.telebot.handlers.common import get_back_menu_keyboard
@@ -15,12 +14,11 @@ from assessment_src.telebot.handlers.common import get_back_menu_keyboard
 class SetSettingsState(StatesGroup):
     wait_for_start = State()
     wait_for_fio = State()
-    wait_for_email = State()
 
 
 def get_settings_keyboard():
     buttons = [
-        "ФИО", "Email",
+        "ФИО",
         "Помощь", "Назад"
     ]
     keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
@@ -47,7 +45,7 @@ async def cmd_settings(message: types.Message, state: FSMContext):
     await state.update_data(student=student)
 
     await message.answer(
-        f"Ваши настройки:\nФИО: {student.fio}\nEmail: {student.email}"
+        f"Ваши настройки:\nФИО: {student.fio}"
     )
 
     await message.answer(
@@ -68,22 +66,12 @@ async def start_settings(message: types.Message, state: FSMContext):
         await message.answer(
             f"Ваше ФИО: {student.fio}\nНовое значение:\n",
         )
-    elif message.text == "Email":
-        await SetSettingsState.wait_for_email.set()
-        await message.answer(
-            f"Ваш email: {student.email}\nНовое значение:\n",
-        )
     else:
         await cmd_settings(message, state)
 
 
 async def update_fio(message: types.Message, state: FSMContext):
     await update_student_db_fio(message.from_user.id, message.text)
-    await cmd_settings(message, state)
-
-
-async def update_email(message: types.Message, state: FSMContext):
-    await update_student_db_email(message.from_user.id, message.text)
     await cmd_settings(message, state)
 
 
@@ -100,7 +88,6 @@ def settings_handlers(dp: Dispatcher):
 
     dp.register_message_handler(start_settings, state=SetSettingsState.wait_for_start)
     dp.register_message_handler(update_fio, state=SetSettingsState.wait_for_fio)
-    dp.register_message_handler(update_email, state=SetSettingsState.wait_for_email)
 
 
 

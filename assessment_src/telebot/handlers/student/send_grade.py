@@ -22,7 +22,6 @@ class SendGradeState(StatesGroup):
     wait_for_token = State()
     wait_for_verify_student = State()
     wait_for_fio = State()
-    wait_for_email = State()
     wait_for_grade = State()
 
 
@@ -42,6 +41,8 @@ async def token_input(message: types.Message, state: FSMContext):
     if not work:
         await message.answer(f"Такой работы нет. Попробуй еще раз.", reply_markup=get_send_grade_keyboard())
         return
+
+    await state.update_data(admin_id=work.admin_id)
 
     grade = await get_grade_from_db(work_id=work.id, user_id=message.from_user.id)
     if grade:
@@ -94,31 +95,18 @@ async def fio_input(message: types.Message, state: FSMContext):
         return
 
     await state.update_data(fio=message.text)
-    await message.answer("Введите email:", reply_markup=get_send_grade_keyboard())
-    await SendGradeState.next()
 
-
-async def email_input(message: types.Message, state: FSMContext):
-    if message.text == "В меню":
-        await back_menu(message, state)
-        return
-
-    if not message.text.find('@') or not message.text.find('.'):
-        await message.answer("Вы ввели не коректный email, попробуйте еще раз:", reply_markup=get_send_grade_keyboard())
-        return
-    await state.update_data(email=message.text)
-    data = await state.get_data()
-    student = await create_student(data)
-    await message.answer("Ваше ФИО и email занесены в систему.")
     await message.answer("Введите оценку:", reply_markup=get_send_grade_keyboard())
     await SendGradeState.next()
 
 
+# @dp.message_handler(state=SendGradeState.wait_for_grade)
 async def grade_input(message: types.Message, state: FSMContext):
     await state.update_data(grade=message.text)
     data = await state.get_data()
     await set_grade_to_db(data)
     await message.answer(f"Оценка занесена в систему.")
+    # await
     await back_menu(message, state)
 
 
@@ -128,5 +116,4 @@ def send_grade_handlers(dp: Dispatcher):
     dp.register_message_handler(token_input, state=SendGradeState.wait_for_token)
     dp.register_message_handler(verify_student, state=SendGradeState.wait_for_verify_student)
     dp.register_message_handler(fio_input, state=SendGradeState.wait_for_fio)
-    dp.register_message_handler(email_input, state=SendGradeState.wait_for_email)
     dp.register_message_handler(grade_input, state=SendGradeState.wait_for_grade)

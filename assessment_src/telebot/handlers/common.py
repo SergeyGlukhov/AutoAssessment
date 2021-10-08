@@ -60,7 +60,6 @@ def menu_handlers_common(dp: Dispatcher):
     dp.register_message_handler(cmd_start, commands="start", state="*")
 
     dp.register_message_handler(back_menu, commands="cancel", state="*")
-    dp.register_message_handler(back_menu, Text(equals="В меню", ignore_case=True), state="*")
 
     dp.register_message_handler(cmd_help, commands="help", state="*")
     dp.register_message_handler(cmd_help, Text(equals="Помощь", ignore_case=True), state="*")

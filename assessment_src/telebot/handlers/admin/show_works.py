@@ -12,6 +12,7 @@ from assessment_src.telebot.logic.query_db import (
     get_works_from_db, get_student_from_db, get_subjects_from_db, get_students_grades_from_db
 )
 from assessment_src.telebot.handlers.admin.admin import back_menu_admin
+from assessment_src.telebot.handlers.common import get_back_menu_keyboard
 
 
 class ShowWorksState(StatesGroup):
@@ -22,13 +23,6 @@ class ShowWorksState(StatesGroup):
 
 cb_subjects = CallbackData("subjects", "name", "id")
 cb_works = CallbackData("works", "name", "id")
-
-
-def get_show_works_keyboard():
-    buttons = ["В меню"]
-    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
-    keyboard.add(*buttons)
-    return keyboard
 
 
 def get_keyboard(object_list: list, call_back: CallbackData):
@@ -49,17 +43,12 @@ async def update_message_keyboard(message: types.Message, new_text: str, object_
 async def show_subjects(message: types.Message):
     student = await get_student_from_db(message.from_user.id)
     subjects = await get_subjects_from_db(group_id=student.group_id)
-    await message.answer(message.text, reply_markup=get_show_works_keyboard())
+    await message.answer(message.text, reply_markup=get_back_menu_keyboard())
     await message.answer("Выберите предмет:", reply_markup=get_keyboard(subjects, cb_subjects))
     await ShowWorksState.wait_for_choice_subject.set()
 
 
 async def choice_subject(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
-
-    if call.message.text == "В меню":
-        await call.answer()
-        await back_menu_admin(call.message, state)
-        return
 
     await state.update_data(subject_name=callback_data["name"])
 
@@ -70,11 +59,6 @@ async def choice_subject(call: types.CallbackQuery, callback_data: dict, state: 
 
 
 async def choice_work(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
-
-    if call.message.text == "В меню":
-        await call.answer()
-        await back_menu_admin(call.message, state)
-        return
 
     work_id = int(callback_data["id"])
     students_grades = await get_students_grades_from_db(work_id)
@@ -93,10 +77,6 @@ async def choice_work(call: types.CallbackQuery, callback_data: dict, state: FSM
 
 
 async def choice_load(message: types.Message, state: FSMContext):
-
-    if message.text == "В меню":
-        await back_menu_admin(message, state)
-        return
 
     if message.text not in ("Да", "Нет"):
         await message.answer("Нажмите на кнопку ниже.")
@@ -122,6 +102,8 @@ async def choice_load(message: types.Message, state: FSMContext):
 def show_works_handlers(dp: Dispatcher):
     dp.register_message_handler(show_subjects, commands="show_works")
     dp.register_message_handler(show_subjects, Text(equals="Мои работы", ignore_case=True), state="*")
+
+    dp.register_message_handler(back_menu_admin, Text(equals="Назад", ignore_case=True), state=ShowWorksState)
 
     dp.register_callback_query_handler(
         choice_subject,

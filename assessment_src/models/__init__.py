@@ -89,7 +89,7 @@ class Work(db.Model):
     __tablename__ = "works"
 
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(10), nullable=False)
+    name = db.Column(db.String(20), nullable=False)
 
     time_start = db.Column(
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow

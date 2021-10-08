@@ -19,7 +19,7 @@ def get_admin_keyboard():
     buttons = [
         "Регистрация", "Создать работу",
         "Мои работы", "Настройки админа",
-        "Помощь", "В меню"
+        "Помощь", "Назад"
     ]
     keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     keyboard.add(*buttons)

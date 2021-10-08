@@ -181,6 +181,18 @@ async def get_students_grades_from_db(work_id: int):
     return grades
 
 
+async def get_my_grades_from_db(student_id: int, subject_id: int):
+    grades = await Grade.outerjoin(
+        Work, Grade.work_id == Work.id
+    ).select().where(
+        Grade.student_id == student_id
+    ).where(
+        Work.subject_id == subject_id
+    ).gino.load(Grade.load(work_name=Work.name)).query.order_by(Grade.id.desc()).gino.all()
+
+    return grades
+
+
 async def update_student_db_fio(id: int, fio: str):
     student = await Student.query.where(Student.id == id).gino.first()
     await student.update(fio=fio).apply()

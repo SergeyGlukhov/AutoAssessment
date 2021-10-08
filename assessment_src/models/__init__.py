@@ -89,7 +89,7 @@ class Work(db.Model):
     __tablename__ = "works"
 
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
 
     time_start = db.Column(
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
@@ -106,7 +106,7 @@ class Grade(db.Model):
     __tablename__ = "grades"
 
     id = db.Column(db.Integer(), primary_key=True)
-    grade = db.Column(db.String(10))
+    grade = db.Column(db.String(20))
 
     time_start = db.Column(
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
@@ -121,7 +121,7 @@ class Subject(db.Model):
     __tablename__ = "subjects"
 
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(30))
+    name = db.Column(db.String(50))
 
     time_start = db.Column(
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow

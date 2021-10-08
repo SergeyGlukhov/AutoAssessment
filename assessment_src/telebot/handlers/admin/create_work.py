@@ -47,7 +47,7 @@ async def subject_input(message: types.Message, state: FSMContext):
 
 async def fio_input(message: types.Message, state: FSMContext):
     await state.update_data(fio=message.text)
-    await message.answer("Введите назыание работы:")
+    await message.answer("Введите название работы:")
     await CreateWorkState.next()
 
 

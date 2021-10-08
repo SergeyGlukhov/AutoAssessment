@@ -32,7 +32,7 @@ async def token_input(message: types.Message, state: FSMContext):
         await message.answer(f"Такой работы нет. Попробуй еще раз.")
         return
 
-    await state.update_data(admin_id=work.admin_id, work_name=work.name)
+    # await state.update_data(admin_id=work.admin_id, work_name=work.name)
 
     grade = await get_grade_from_db(work_id=work.id, user_id=message.from_user.id)
     if grade:
@@ -46,7 +46,8 @@ async def token_input(message: types.Message, state: FSMContext):
         id=message.from_user.id,
         admin_id=work.admin_id,
         group_id=work.group_id,
-        work_id=work.id
+        work_id=work.id,
+        work_name=work.name
     )
     await SendGradeState.wait_for_verify_student.set()
 
@@ -64,16 +65,16 @@ async def verify_student(message: types.Message, state: FSMContext):
         await message.answer(f"Введите ФИО:")
         await SendGradeState.wait_for_fio.set()
         return
-
-    state = await state.update_data(fio=student.fio)
-
+    await state.update_data(fio=student.fio)
     await message.answer(f"Введите оценку:")
     await SendGradeState.wait_for_grade.set()
 
 
 async def fio_input(message: types.Message, state: FSMContext):
-
+    await state.update_data(fio=message.text)
     await message.answer("Введите оценку:")
+    data = await state.get_data()
+    await create_student(data)
     await SendGradeState.next()
 
 
@@ -84,6 +85,7 @@ async def grade_input(message: types.Message, state: FSMContext):
     fio = data.get("fio")
     grade = message.text
     work_name = data.get("work_name")
+
     await message.from_user.bot.send_message(data.get("admin_id"), f"Работа {work_name}: {fio} - {grade}")
 
     await message.answer(f"Оценка занесена в систему.")

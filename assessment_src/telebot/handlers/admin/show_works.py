@@ -100,7 +100,7 @@ async def choice_load(message: types.Message, state: FSMContext):
     )
     path = os.path.join(file.name)
     os.remove(path)
-    await state.finish()
+    await back_menu_admin(message, state)
 
 
 def show_works_handlers(dp: Dispatcher):

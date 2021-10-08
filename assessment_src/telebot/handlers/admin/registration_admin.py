@@ -74,7 +74,7 @@ async def fio_input(message: types.Message, state: FSMContext):
     data = await state.get_data()
     await set_registration_admin_to_db(data)
     await message.answer("Вы зарегистрировались.")
-    await state.finish()
+    await back_menu_admin(message, state)
 
 
 def register_handlers_admin(dp: Dispatcher):

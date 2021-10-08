@@ -121,7 +121,7 @@ class Subject(db.Model):
     __tablename__ = "subjects"
 
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(10))
+    name = db.Column(db.String(30))
 
     time_start = db.Column(
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow

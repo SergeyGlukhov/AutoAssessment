@@ -6,6 +6,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 # from assessment_src.telebot.handlers.admin.registration_admin import (
 #     start_registration, AdminRegistrationState, register_handlers_admin, verify_new_student_for_registration
 # )
+from assessment_src.telebot.handlers.common import back_menu
 
 
 class AdminState(StatesGroup):
@@ -38,3 +39,5 @@ async def back_menu_admin(message: types.Message, state: FSMContext):
 def admin_handlers(dp: Dispatcher):
     dp.register_message_handler(back_menu_admin, commands="admin", state="*")
     dp.register_message_handler(back_menu_admin, Text(equals="Админ", ignore_case=True), state="*")
+
+    dp.register_message_handler(back_menu, Text(equals="Назад", ignore_case=True), state=AdminState)

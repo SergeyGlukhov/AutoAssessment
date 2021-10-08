@@ -40,8 +40,12 @@ async def update_message_keyboard(message: types.Message, new_text: str, object_
         await message.edit_text(f"Выберите {new_text}", reply_markup=get_keyboard(object_list, call_back))
 
 
-async def show_subjects(message: types.Message):
+async def show_subjects(message: types.Message, state: FSMContext):
     student = await get_student_from_db(message.from_user.id)
+    if not student:
+        await message.answer("Вас нет в системе.\nДля начала вам нужно отправить оценку или зарегистрироваться админом.\n/send_grade - Отправить оценку\n/registration_admin - Регистрация админом\n")
+        await back_menu_admin(message, state)
+        return
     subjects = await get_subjects_from_db(group_id=student.group_id)
     await message.answer(message.text, reply_markup=get_back_menu_keyboard())
     await message.answer("Выберите предмет:", reply_markup=get_keyboard(subjects, cb_subjects))

@@ -38,8 +38,12 @@ async def update_message_keyboard(message: types.Message, new_text: str, object_
         await message.edit_text(f"Выберите {new_text}", reply_markup=get_keyboard(object_list, call_back))
 
 
-async def show_subjects(message: types.Message):
+async def show_subjects(message: types.Message, state: FSMContext):
     student = await get_student_from_db(message.from_user.id)
+    if not student:
+        await message.answer("Вас нет в ситиеме.")
+        await back_menu(message, state)
+        return
     subjects = await get_subjects_from_db(group_id=student.group_id)
     await message.answer(message.text, reply_markup=get_back_menu_keyboard())
     await message.answer("Выберите предмет:", reply_markup=get_keyboard(subjects, cb_subjects))
@@ -70,7 +74,7 @@ async def choice_subject(call: types.CallbackQuery, callback_data: dict, state: 
 
 
 def show_grades_handlers(dp: Dispatcher):
-    dp.register_message_handler(show_subjects, commands="show_grades")
+    dp.register_message_handler(show_subjects, commands="show_grades",  state="*")
     dp.register_message_handler(show_subjects, Text(equals="Отправленные оценки", ignore_case=True), state="*")
 
     dp.register_message_handler(back_menu, Text(equals="Назад", ignore_case=True), state=ShowGradesState)

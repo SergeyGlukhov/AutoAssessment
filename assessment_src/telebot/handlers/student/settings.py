@@ -32,12 +32,7 @@ async def cmd_settings(message: types.Message, state: FSMContext):
     student = await get_student_from_db(message.from_user.id)
     if not student:
         await message.answer(
-            """
-            Вас нет в системе.\n
-            Для начала вам нужно отправить оценку или зарегистрироваться админом.\n
-            /send_grade - Отправить оценку\n
-            /registration_admin - Регистрация админом\n
-            """
+            "Вас нет в системе.\nДля начала вам нужно отправить оценку или зарегистрироваться админом.\n/send_grade - Отправить оценку\n/registration_admin - Регистрация админом\n"
         )
         await back_menu(message, state)
         return

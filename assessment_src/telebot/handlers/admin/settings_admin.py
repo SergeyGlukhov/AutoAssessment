@@ -38,10 +38,7 @@ async def cmd_settings(message: types.Message, state: FSMContext):
     admin_settings = await get_admin_settings_from_db(message.from_user.id)
     if not admin_settings:
         await message.answer(
-            """
-            У вас нет полномочий админа.\n
-            /registration_admin - Регистрация админом\n
-            """
+            "У вас нет полномочий админа.\n/registration_admin - Регистрация админом\n"
         )
         await back_menu_admin(message, state)
         return

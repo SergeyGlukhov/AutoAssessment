@@ -28,7 +28,7 @@ async def start_create_work(message: types.Message, state: FSMContext):
 
     student = await get_student_from_db(message.from_user.id)
     if not student or not student.is_admin:
-        await message.answer(f"Для начала необходимо зарегестрироваться - /registration_admin")
+        await message.answer("У вас нет полномочий админа.\n/registration_admin - Регистрация админом\n")
         await back_menu_admin(message, state)
         return
 

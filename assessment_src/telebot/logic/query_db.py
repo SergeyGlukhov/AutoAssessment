@@ -4,11 +4,7 @@ import random
 from sqlalchemy import and_
 
 from assessment_src.models import (
-    University,
-    Student,
-    City,
-    Faculty,
-    Group, Teacher, Subject, Work, Grade
+    Group, Teacher, Subject, Work, Grade, Student
 )
 
 
@@ -23,33 +19,31 @@ async def create_student(data: dict, is_admin: bool = False):
 
 
 async def set_registration_admin_to_db(data: dict):
-    city = await City.query.where(City.name == data.get("city")).gino.first()
-    if not city:
-        city = await City.create(name=data.get("city", None))
-
-    university = await University.query.where(
-        University.name == data.get("university")
-    ).where(
-        University.city_id == city.id
-    ).gino.first()
-    if not university:
-        university = await University.create(name=data.get("university", None), city_id=city.id)
-
-    faculty = await Faculty.query.where(
-        Faculty.name == data.get("faculty")
-    ).where(
-        Faculty.university_id == university.id
-    ).gino.first()
-    if not faculty:
-        faculty = await Faculty.create(name=data.get("faculty", None), university_id=university.id)
+    # city = await City.query.where(City.name == data.get("city")).gino.first()
+    # if not city:
+    #     city = await City.create(name=data.get("city", None))
+    #
+    # university = await University.query.where(
+    #     University.name == data.get("university")
+    # ).where(
+    #     University.city_id == city.id
+    # ).gino.first()
+    # if not university:
+    #     university = await University.create(name=data.get("university", None), city_id=city.id)
+    #
+    # faculty = await Faculty.query.where(
+    #     Faculty.name == data.get("faculty")
+    # ).where(
+    #     Faculty.university_id == university.id
+    # ).gino.first()
+    # if not faculty:
+    #     faculty = await Faculty.create(name=data.get("faculty", None), university_id=university.id)
 
     group = await Group.query.where(
         Group.name == data.get("group")
-    ).where(
-        Group.faculty_id == faculty.id
     ).gino.first()
     if not group:
-        group = await Group.create(name=data.get("group", None), faculty_id=faculty.id)
+        group = await Group.create(name=data.get("group", None))
 
     student = await get_student_from_db(user_id=data.get("id"))
     if not student:
@@ -201,41 +195,29 @@ async def update_student_db_fio(id: int, fio: str):
 async def get_admin_settings_from_db(id: int):
     settings_admin_query = Student.outerjoin(
         Group, Student.group_id == Group.id
-    ).outerjoin(
-        Faculty, Faculty.id == Group.faculty_id
-    ).outerjoin(
-        University, University.id == Faculty.university_id
-    ).outerjoin(
-        City, City.id == University.city_id
     ).select().where(Student.id == id).where(Student.is_admin == True)
 
     settings_admin = await settings_admin_query.gino.load(
         Student.load(
             group=Group.name,
-            faculty=Faculty.name,
-            faculty_id=Faculty.id,
-            university=University.name,
-            university_id=University.id,
-            city=City.name,
-            city_id=City.id
         )
     ).first()
     return settings_admin
 
 
-async def update_city_db(id, name):
-    city = await City.query.where(City.id == id).gino.first()
-    await city.update(name=name).apply()
+# async def update_city_db(id, name):
+#     city = await City.query.where(City.id == id).gino.first()
+#     await city.update(name=name).apply()
 
 
-async def update_university_db(id, name):
-    university = await University.query.where(University.id == id).gino.first()
-    await university.update(name=name).apply()
+# async def update_university_db(id, name):
+#     university = await University.query.where(University.id == id).gino.first()
+#     await university.update(name=name).apply()
 
 
-async def update_faculty_db(id, name):
-    faculty = await Faculty.query.where(Faculty.id == id).gino.first()
-    await faculty.update(name=name).apply()
+# async def update_faculty_db(id, name):
+#     faculty = await Faculty.query.where(Faculty.id == id).gino.first()
+#     await faculty.update(name=name).apply()
 
 
 async def update_group_db(id, name):

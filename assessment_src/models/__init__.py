@@ -35,41 +35,41 @@ class Teacher(db.Model):
     group_id = db.Column(db.Integer(), nullable=False)
 
 
-class City(db.Model):
-    __tablename__ = "cities"
-
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(20))
-
-    time_start = db.Column(
-        db.DateTime(), nullable=False, default=datetime.datetime.utcnow
-    )
-
-
-class University(db.Model):
-    __tablename__ = "universities"
-
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(20))
-
-    time_start = db.Column(
-        db.DateTime(), nullable=False, default=datetime.datetime.utcnow
-    )
-
-    city_id = db.Column(db.Integer(), nullable=False)
-
-
-class Faculty(db.Model):
-    __tablename__ = "faculties"
-
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(20))
-
-    time_start = db.Column(
-        db.DateTime(), nullable=False, default=datetime.datetime.utcnow
-    )
-
-    university_id = db.Column(db.Integer(), nullable=False)
+# class City(db.Model):
+#     __tablename__ = "cities"
+#
+#     id = db.Column(db.Integer(), primary_key=True)
+#     name = db.Column(db.String(20))
+#
+#     time_start = db.Column(
+#         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
+#     )
+#
+#
+# class University(db.Model):
+#     __tablename__ = "universities"
+#
+#     id = db.Column(db.Integer(), primary_key=True)
+#     name = db.Column(db.String(20))
+#
+#     time_start = db.Column(
+#         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
+#     )
+#
+#     city_id = db.Column(db.Integer(), nullable=False)
+#
+#
+# class Faculty(db.Model):
+#     __tablename__ = "faculties"
+#
+#     id = db.Column(db.Integer(), primary_key=True)
+#     name = db.Column(db.String(20))
+#
+#     time_start = db.Column(
+#         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
+#     )
+#
+#     university_id = db.Column(db.Integer(), nullable=False)
 
 
 class Group(db.Model):
@@ -82,7 +82,7 @@ class Group(db.Model):
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
     )
 
-    faculty_id = db.Column(db.Integer(), nullable=False)
+    # faculty_id = db.Column(db.Integer(), nullable=False)
 
 
 class Work(db.Model):

@@ -66,6 +66,11 @@ async def choice_work(call: types.CallbackQuery, callback_data: dict, state: FSM
 
     work_id = int(callback_data["id"])
     students_grades = await get_students_grades_from_db(work_id)
+    if not students_grades:
+        await call.message.answer("Нет оценок.")
+        await call.answer()
+        await back_menu_admin(call.message, state)
+        return
     message = ""
     for sg in students_grades:
         message += f"{sg.fio} - {sg.grade.grade}\n"

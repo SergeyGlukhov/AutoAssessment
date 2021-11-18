@@ -111,7 +111,6 @@ class Work(db.Model):
 
     discipline = db.Column(
         ChoiceType(DisciplineEnum, impl=db.Integer()),
-        nullable=False,
         default=DisciplineEnum.other
     )
 

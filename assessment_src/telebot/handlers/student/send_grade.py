@@ -3,6 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
+from assessment_src.models import DisciplineEnum
 from assessment_src.telebot.logic.query_db import (
     get_student_from_db,
     get_work_from_db,
@@ -52,6 +53,16 @@ async def token_input(message: types.Message, state: FSMContext):
     await SendGradeState.wait_for_verify_student.set()
 
 
+def get_list_disciplines(discipline: DisciplineEnum):
+    list_disciplines = None
+    if discipline == DisciplineEnum.exam:
+        list_disciplines = ["2", "3", "4", "5"]
+    elif discipline == DisciplineEnum.zach:
+        list_disciplines = ["Незачет", "Зачет"]
+
+    return list_disciplines
+
+
 async def verify_student(message: types.Message, state: FSMContext):
 
     if message.text != "Продолжить":
@@ -66,22 +77,47 @@ async def verify_student(message: types.Message, state: FSMContext):
         await SendGradeState.wait_for_fio.set()
         return
     await state.update_data(fio=student.fio)
-    await message.answer(f"Введите оценку:")
+    work_id = int(data.get("work_id"))
+    work = await get_work_from_db(id=work_id)
+
+    list_disciplines = get_list_disciplines(work.discipline)
+    if list_disciplines:
+        await message.answer(f"Выберите оценку:", reply_markup=get_back_menu_keyboard(list_disciplines))
+    else:
+        await message.answer(f"Введите оценку:", reply_markup=get_back_menu_keyboard())
     await SendGradeState.wait_for_grade.set()
 
 
 async def fio_input(message: types.Message, state: FSMContext):
     await state.update_data(fio=message.text)
-    await message.answer("Введите оценку:")
     data = await state.get_data()
     await create_student(data)
+
+    work_id = int(data.get("work_id"))
+    work = await get_work_from_db(id=work_id)
+
+    list_disciplines = get_list_disciplines(work.discipline)
+    if list_disciplines:
+        await message.answer(f"Выберите оценку:", reply_markup=get_back_menu_keyboard(list_disciplines))
+    else:
+        await message.answer(f"Введите оценку:", reply_markup=get_back_menu_keyboard())
+
     await SendGradeState.next()
 
 
 async def grade_input(message: types.Message, state: FSMContext):
-    await state.update_data(grade=message.text)
     data = await state.get_data()
-    await set_grade_to_db(data)
+    work_id = int(data.get("work_id"))
+    work = await get_work_from_db(id=work_id)
+    list_disciplines = get_list_disciplines(work.discipline)
+
+    if list_disciplines and (message.text not in list_disciplines):
+        await message.answer(f"Выберите оценку:")
+        return
+
+    await state.update_data(grade=message.text)
+    data["grade"] = message.text
+    grade = await set_grade_to_db(data)
     fio = data.get("fio")
     grade = message.text
     work_name = data.get("work_name")

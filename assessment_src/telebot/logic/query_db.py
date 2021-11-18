@@ -106,7 +106,8 @@ async def set_work_to_db(data: dict):
             Work.teacher_id == teacher.id,
             Work.admin_id == student.id,
             Work.subject_id == subject.id,
-            Work.group_id == data.get("group_id")
+            Work.group_id == data.get("group_id"),
+            Work.discipline == data.get("discipline")
         )
     ).gino.first()
     if not work:
@@ -117,13 +118,18 @@ async def set_work_to_db(data: dict):
             teacher_id=teacher.id,
             admin_id=student.id,
             subject_id=subject.id,
-            group_id=data.get("group_id")
+            group_id=data.get("group_id"),
+            discipline=data.get("discipline")
         )
     return work.token
 
 
-async def get_work_from_db(token: str):
-    work = await Work.query.where(Work.token == token).gino.first()
+async def get_work_from_db(token: str = None, id: int = None) -> Work:
+    work = None
+    if token:
+        work = await Work.query.where(Work.token == token).gino.first()
+    if id:
+        work = await Work.query.where(Work.id == id).gino.first()
     return work
 
 
@@ -134,6 +140,7 @@ async def set_grade_to_db(data: dict):
         student_id=data.get("id"),
         work_id=data.get("work_id")
     )
+    return grade
 
 
 async def get_grade_from_db(user_id: int, work_id: int):

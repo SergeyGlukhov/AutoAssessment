@@ -1,6 +1,8 @@
 import datetime
+import enum
 
 from gino_starlette import Gino
+from sqlalchemy_utils import ChoiceType
 
 from assessment_src import config
 
@@ -85,6 +87,12 @@ class Group(db.Model):
     # faculty_id = db.Column(db.Integer(), nullable=False)
 
 
+class DisciplineEnum(enum.Enum):
+    zach = 0
+    exam = 1
+    other = 2
+
+
 class Work(db.Model):
     __tablename__ = "works"
 
@@ -100,6 +108,12 @@ class Work(db.Model):
     admin_id = db.Column(db.Integer(), nullable=False, index=True)
     subject_id = db.Column(db.Integer(), nullable=False, index=True)
     group_id = db.Column(db.Integer(), nullable=False, index=True)
+
+    discipline = db.Column(
+        ChoiceType(DisciplineEnum, impl=db.Integer()),
+        nullable=False,
+        default=DisciplineEnum.other
+    )
 
 
 class Grade(db.Model):

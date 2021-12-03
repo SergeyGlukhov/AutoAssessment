@@ -96,7 +96,7 @@ async def choice_load(message: types.Message, state: FSMContext):
 
     data = await state.get_data()
     work_name = "".join(data.get("work_name").split())
-    with open(f"{work_name}_{datetime.date.today()}", "w") as file:
+    with open(f"{work_name}_{datetime.date.today()}.txt", "w") as file:
         file.write(data.get("grades_students"))
     await message.answer_document(
         types.input_file.InputFile(file.name),

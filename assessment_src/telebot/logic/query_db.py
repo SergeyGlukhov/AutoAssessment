@@ -12,8 +12,7 @@ async def create_student(data: dict, is_admin: bool = False):
     student = await Student.create(
         id=data.get("id"),
         fio=data.get("fio"),
-        is_admin=is_admin,
-        group_id=data.get("group_id")
+        is_admin=is_admin
     )
     return student
 

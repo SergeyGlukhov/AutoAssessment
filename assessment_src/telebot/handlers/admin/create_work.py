@@ -57,7 +57,7 @@ disciplines_list = ["Зачет", "Экзамен", "Другое"]
 
 async def work_input(message: types.Message, state: FSMContext):
     await state.update_data(work=message.text)
-    await message.answer("Выберите дисциплину:", reply_markup=get_back_menu_keyboard(disciplines_list))
+    await message.answer("Выберите вид контроля:", reply_markup=get_back_menu_keyboard(disciplines_list))
     await CreateWorkState.next()
 
 

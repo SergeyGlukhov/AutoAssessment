@@ -19,8 +19,8 @@ class AdminState(StatesGroup):
 def get_admin_keyboard():
     buttons = [
         "Регистрация", "Создать работу",
-        "Мои работы", "Настройки админа",
-        "Помощь", "Назад"
+        "Мои работы", "Помощь",
+        "Назад"
     ]
     keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     keyboard.add(*buttons)

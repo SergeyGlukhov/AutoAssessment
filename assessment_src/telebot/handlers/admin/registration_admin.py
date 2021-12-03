@@ -17,7 +17,7 @@ class AdminRegistrationState(StatesGroup):
     # wait_for_city = State()
     # wait_for_university = State()
     # wait_for_faculty = State()
-    wait_for_group = State()
+    # wait_for_group = State()
     wait_for_fio = State()
 
 
@@ -36,7 +36,7 @@ async def start_registration(message: types.Message, state: FSMContext):
             return
 
     await state.update_data(id=message.from_user.id)
-    await message.answer("Введите группу:", reply_markup=get_back_menu_keyboard())
+    await message.answer("Введите ФИО:", reply_markup=get_back_menu_keyboard())
     await AdminRegistrationState.next()
 
 
@@ -61,12 +61,12 @@ async def start_registration(message: types.Message, state: FSMContext):
 #     await message.answer("Введите группу:")
 #     await AdminRegistrationState.next()
 
-
-async def group_input(message: types.Message, state: FSMContext):
-    await state.update_data(group=message.text)
-
-    await AdminRegistrationState.next()
-    await message.answer("Введите ФИО:")
+#
+# async def group_input(message: types.Message, state: FSMContext):
+#     await state.update_data(group=message.text)
+#
+#     await AdminRegistrationState.next()
+#     await message.answer("Введите ФИО:")
 
 
 async def fio_input(message: types.Message, state: FSMContext):
@@ -98,7 +98,7 @@ def register_handlers_admin(dp: Dispatcher):
     # dp.register_message_handler(city_input, state=AdminRegistrationState.wait_for_city)
     # dp.register_message_handler(university_input, state=AdminRegistrationState.wait_for_university)
     # dp.register_message_handler(faculty_input, state=AdminRegistrationState.wait_for_faculty)
-    dp.register_message_handler(group_input, state=AdminRegistrationState.wait_for_group)
+    # dp.register_message_handler(group_input, state=AdminRegistrationState.wait_for_group)
     dp.register_message_handler(fio_input, state=AdminRegistrationState.wait_for_fio)
 
 

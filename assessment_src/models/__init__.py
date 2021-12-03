@@ -17,11 +17,11 @@ class Student(db.Model):
 
     is_admin = db.Column(db.Boolean(), default=False)
 
-    time_start = db.Column(
-        db.DateTime(), nullable=False, default=datetime.datetime.utcnow
-    )
+    # time_start = db.Column(
+    #     db.DateTime(), nullable=False, default=datetime.datetime.utcnow
+    # )
 
-    group_id = db.Column(db.Integer(), nullable=False)
+    # group_id = db.Column(db.Integer(), nullable=False)
 
 
 class Teacher(db.Model):
@@ -30,11 +30,11 @@ class Teacher(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     fio = db.Column(db.String(50))
 
-    time_start = db.Column(
-        db.DateTime(), nullable=False, default=datetime.datetime.utcnow
-    )
+    # time_start = db.Column(
+    #     db.DateTime(), nullable=False, default=datetime.datetime.utcnow
+    # )
 
-    group_id = db.Column(db.Integer(), nullable=False)
+    # group_id = db.Column(db.Integer(), nullable=False)
 
 
 # class City(db.Model):
@@ -74,15 +74,15 @@ class Teacher(db.Model):
 #     university_id = db.Column(db.Integer(), nullable=False)
 
 
-class Group(db.Model):
-    __tablename__ = "groups"
+# class Group(db.Model):
+#     __tablename__ = "groups"
+#
+#     id = db.Column(db.Integer(), primary_key=True)
+#     name = db.Column(db.String(10))
 
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(10))
-
-    time_start = db.Column(
-        db.DateTime(), nullable=False, default=datetime.datetime.utcnow
-    )
+    # time_start = db.Column(
+    #     db.DateTime(), nullable=False, default=datetime.datetime.utcnow
+    # )
 
     # faculty_id = db.Column(db.Integer(), nullable=False)
 
@@ -99,15 +99,15 @@ class Work(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
-    time_start = db.Column(
-        db.DateTime(), nullable=False, default=datetime.datetime.utcnow
-    )
+    # time_start = db.Column(
+    #     db.DateTime(), nullable=False, default=datetime.datetime.utcnow
+    # )
     token = db.Column(db.String(20), nullable=False, index=True)
 
-    teacher_id = db.Column(db.Integer(), nullable=False, index=True)
+    # teacher_id = db.Column(db.Integer(), nullable=False, index=True)
     admin_id = db.Column(db.Integer(), nullable=False, index=True)
-    subject_id = db.Column(db.Integer(), nullable=False, index=True)
-    group_id = db.Column(db.Integer(), nullable=False, index=True)
+    # subject_id = db.Column(db.Integer(), nullable=False, index=True)
+    # group_id = db.Column(db.Integer(), nullable=False, index=True)
 
     discipline = db.Column(
         ChoiceType(DisciplineEnum, impl=db.Integer()),
@@ -130,15 +130,15 @@ class Grade(db.Model):
     work_id = db.Column(db.Integer(), nullable=False, index=True)
 
 
-class Subject(db.Model):
-    __tablename__ = "subjects"
-
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(50))
-
-    time_start = db.Column(
-        db.DateTime(), nullable=False, default=datetime.datetime.utcnow
-    )
-
-    teacher_id = db.Column(db.Integer(), nullable=False)
-    group_id = db.Column(db.Integer(), nullable=False, index=True)
+# class Subject(db.Model):
+#     __tablename__ = "subjects"
+#
+#     id = db.Column(db.Integer(), primary_key=True)
+#     name = db.Column(db.String(50))
+#
+#     time_start = db.Column(
+#         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
+#     )
+#
+#     teacher_id = db.Column(db.Integer(), nullable=False)
+#     group_id = db.Column(db.Integer(), nullable=False, index=True)

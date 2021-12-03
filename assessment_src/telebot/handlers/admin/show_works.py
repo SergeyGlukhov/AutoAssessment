@@ -1,22 +1,21 @@
 import os
-from contextlib import suppress
+import datetime
 
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.utils.callback_data import CallbackData
-from aiogram.utils.exceptions import MessageNotModified
 
 from assessment_src.telebot.logic.query_db import (
-    get_works_from_db, get_student_from_db, get_subjects_from_db, get_students_grades_from_db
+    get_works_from_db, get_student_from_db, get_students_grades_from_db
 )
 from assessment_src.telebot.handlers.admin.admin import back_menu_admin
 from assessment_src.telebot.handlers.common import get_back_menu_keyboard
 
 
 class ShowWorksState(StatesGroup):
-    wait_for_choice_subject = State()
+    # wait_for_choice_subject = State()
     wait_for_choice_work = State()
     wait_for_choice_load = State()
 
@@ -35,31 +34,32 @@ def get_keyboard(object_list: list, call_back: CallbackData):
     return keyboard
 
 
-async def update_message_keyboard(message: types.Message, new_text: str, object_list: list, call_back: CallbackData):
-    with suppress(MessageNotModified):
-        await message.edit_text(f"Выберите {new_text}", reply_markup=get_keyboard(object_list, call_back))
+# async def update_message_keyboard(message: types.Message, new_text: str, object_list: list, call_back: CallbackData):
+#     with suppress(MessageNotModified):
+#         await message.edit_text(f"Выберите {new_text}", reply_markup=get_keyboard(object_list, call_back))
 
 
-async def show_subjects(message: types.Message, state: FSMContext):
+async def show_works(message: types.Message, state: FSMContext):
     student = await get_student_from_db(message.from_user.id)
     if not student:
         await message.answer("Вас нет в системе.\nДля начала вам нужно отправить оценку или зарегистрироваться админом.\n/send_grade - Отправить оценку\n/registration_admin - Регистрация админом\n")
         await back_menu_admin(message, state)
         return
-    subjects = await get_subjects_from_db(group_id=student.group_id)
+
+    works = await get_works_from_db(user_id=student.id)
     await message.answer(message.text, reply_markup=get_back_menu_keyboard())
-    await message.answer("Выберите предмет:", reply_markup=get_keyboard(subjects, cb_subjects))
-    await ShowWorksState.wait_for_choice_subject.set()
+    await message.answer("Выберите работу:", reply_markup=get_keyboard(works, cb_works))
+    await ShowWorksState.wait_for_choice_work.set()
 
 
-async def choice_subject(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
-
-    await state.update_data(subject_name=callback_data["name"])
-
-    works = await get_works_from_db(subject_id=int(callback_data["id"]), user_id=call.from_user.id)
-    await call.message.edit_text("Выберите работу:", reply_markup=get_keyboard(works, cb_works))
-    await call.answer()
-    await ShowWorksState.next()
+# async def choice_subject(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
+#
+#     await state.update_data(subject_name=callback_data["name"])
+#
+#     works = await get_works_from_db(subject_id=int(callback_data["id"]), user_id=call.from_user.id)
+#     await call.message.edit_text("Выберите работу:", reply_markup=get_keyboard(works, cb_works))
+#     await call.answer()
+#     await ShowWorksState.next()
 
 
 async def choice_work(call: types.CallbackQuery, callback_data: dict, state: FSMContext):
@@ -95,9 +95,8 @@ async def choice_load(message: types.Message, state: FSMContext):
         return
 
     data = await state.get_data()
-    subject_name = "".join(data.get("subject_name").split())
     work_name = "".join(data.get("work_name").split())
-    with open(f"{subject_name}-{work_name}.txt", "w") as file:
+    with open(f"{work_name}_{datetime.date.today()}", "w") as file:
         file.write(data.get("grades_students"))
     await message.answer_document(
         types.input_file.InputFile(file.name),
@@ -109,16 +108,16 @@ async def choice_load(message: types.Message, state: FSMContext):
 
 
 def show_works_handlers(dp: Dispatcher):
-    dp.register_message_handler(show_subjects, commands="show_works")
-    dp.register_message_handler(show_subjects, Text(equals="Мои работы", ignore_case=True), state="*")
+    dp.register_message_handler(show_works, commands="show_works")
+    dp.register_message_handler(show_works, Text(equals="Мои работы", ignore_case=True), state="*")
 
     dp.register_message_handler(back_menu_admin, Text(equals="Назад", ignore_case=True), state=ShowWorksState)
 
-    dp.register_callback_query_handler(
-        choice_subject,
-        cb_subjects.filter(),
-        state=ShowWorksState.wait_for_choice_subject
-    )
+    # dp.register_callback_query_handler(
+    #     choice_subject,
+    #     cb_subjects.filter(),
+    #     state=ShowWorksState.wait_for_choice_subject
+    # )
     dp.register_callback_query_handler(
         choice_work,
         cb_works.filter(),

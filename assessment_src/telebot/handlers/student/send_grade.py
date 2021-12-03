@@ -46,7 +46,6 @@ async def token_input(message: types.Message, state: FSMContext):
     await state.update_data(
         id=message.from_user.id,
         admin_id=work.admin_id,
-        group_id=work.group_id,
         work_id=work.id,
         work_name=work.name
     )
